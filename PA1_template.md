@@ -5,14 +5,13 @@ output:
     keep_md: true
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
+
 
 
 ## Loading and preprocessing the data
 
-```{r cache=TRUE}
+
+```r
 library(data.table)
 library(ggplot2)
 library(scales)
@@ -26,12 +25,38 @@ raw_data$interval <- as.factor(raw_data$interval)
 
 ## What is mean total number of steps taken per day?
 
-```{r}
+
+```r
 library(data.table)
 library(ggplot2)
 library(scales)
 library(Hmisc)
+```
 
+```
+## Loading required package: lattice
+```
+
+```
+## Loading required package: survival
+```
+
+```
+## Loading required package: Formula
+```
+
+```
+## 
+## Attaching package: 'Hmisc'
+```
+
+```
+## The following objects are masked from 'package:base':
+## 
+##     format.pval, units
+```
+
+```r
 non_NA_data <- raw_data[complete.cases(raw_data[c(1,3)]), c("steps","date")]
 #non_NA_data <- tapply(raw_data$steps, raw_data$date, sum, na.rm=TRUE)
 
@@ -42,15 +67,24 @@ graph+geom_histogram(stat = 'identity')+
 	ylab('Number of Steps')+
 	ggtitle('Number of Steps per Date')+
 	theme(plot.title = element_text(hjust = 0.5))
+```
 
+```
+## Warning: Ignoring unknown parameters: binwidth, bins, pad
+```
+
+![](PA1_template_files/figure-html/unnamed-chunk-2-1.png)<!-- -->
+
+```r
 mean_steps <- mean(steps_per_day$steps)
 median_steps <- median(steps_per_day$steps)
 ```
-The mean of the steps taken each day is `r mean_steps` and its median is `r median_steps`.
+The mean of the steps taken each day is 1.0766189\times 10^{4} and its median is 10765.
 
 ## What is the average daily activity pattern?
 
-```{r}
+
+```r
 library(data.table)
 library(ggplot2)
 library(scales)
@@ -64,26 +98,33 @@ graph + geom_line()+
 	ylab('Mean of Steps')+
 	ggtitle('Mean of Steps per Interval')+
 	theme(plot.title = element_text(hjust = 0.5))
+```
 
+![](PA1_template_files/figure-html/unnamed-chunk-3-1.png)<!-- -->
+
+```r
 mostSteps <- which.max(steps_by_interval$meanSteps)
 timeMostSteps <-  gsub("([0-9]{1,2})([0-9]{2})", "\\1:\\2", averageStepsPerTimeBlock[mostSteps,'interval'])
 ```
 
-The interval with the highest mean is `r timeMostSteps`
+The interval with the highest mean is 8:35
 
 
 
 ## Imputing missing values
-```{r}
+
+```r
 num_NA <- nrow(raw_data[!complete.cases(raw_data),])
 ```
-The number of missing values in the dataset is `r num_NA`
-```{r}
+The number of missing values in the dataset is 2304
+
+```r
 imputed_data <- raw_data
 imputed_data$steps <- impute(raw_data$steps, fun = mean)
 ```
 
-```{r}
+
+```r
 non_NA_data <- imputed_data[complete.cases(imputed_data), c("steps","date")]
 steps_per_day <- aggregate(steps~date, non_NA_data, FUN=sum)
 graph <- ggplot(steps_per_day, aes(y=steps,x=date,fill=date))
@@ -92,13 +133,22 @@ graph+geom_histogram(stat = 'identity')+
 	ylab('Number of Steps(imputed)')+
 	ggtitle('Number of Steps(imputed) per Date')+
 	theme(plot.title = element_text(hjust = 0.5))
+```
 
+```
+## Warning: Ignoring unknown parameters: binwidth, bins, pad
+```
+
+![](PA1_template_files/figure-html/unnamed-chunk-6-1.png)<!-- -->
+
+```r
 mean_steps <- mean(steps_per_day$steps)
 median_steps <- median(steps_per_day$steps)
 ```
-The mean of the steps taken each day is `r mean_steps` and its median is `r median_steps`.
+The mean of the steps taken each day is 1.0766189\times 10^{4} and its median is 1.0766189\times 10^{4}.
 ## Are there differences in activity patterns between weekdays and weekends?
-```{r}
+
+```r
 library(data.table)
 library(ggplot2)
 library(scales)
@@ -121,5 +171,6 @@ graph+geom_line()+
 	ylab('Average number of Steps')+
 	ggtitle('Average number of Steps per Date')+
 	theme(plot.title = element_text(hjust = 0.5),legend.position = "none")
-
 ```
+
+![](PA1_template_files/figure-html/unnamed-chunk-7-1.png)<!-- -->
